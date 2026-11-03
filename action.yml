@@ -1,0 +1,70 @@
+name: mezura badge
+description: A lines-of-code badge for your README, counted by mezura in CI
+author: subamanis
+
+branding:
+  icon: align-left
+  color: purple
+
+inputs:
+  args:
+    description: The mezura command line, passed whole. Quotes group words as in a shell.
+    default: --badge
+  file:
+    description: The name of the SVG on the mezura-badge branch.
+    default: badge.svg
+
+runs:
+  using: composite
+  steps:
+    - name: Download mezura
+      shell: bash
+      env:
+        MEZURA_VERSION: v3.4.0
+      run: |
+        if [ "$RUNNER_OS" != Linux ] || [ "$RUNNER_ARCH" != X64 ]; then
+          echo "::error::mezura badge needs a Linux X64 runner, found $RUNNER_OS $RUNNER_ARCH"
+          exit 1
+        fi
+        mkdir -p "$RUNNER_TEMP/mezura-bin"
+        curl -fsSL "https://github.com/subamanis/mezura/releases/download/$MEZURA_VERSION/mezura-$MEZURA_VERSION-linux-x86_64.tar.gz" \
+          | tar xz --strip-components=1 -C "$RUNNER_TEMP/mezura-bin"
+
+    - name: Draw the badge
+      shell: bash
+      env:
+        ARGS: ${{ inputs.args }}
+      run: |
+        printf '%s\n' "$ARGS" | xargs "$RUNNER_TEMP/mezura-bin/mezura" > "$RUNNER_TEMP/mezura-badge.svg"
+        if [ ! -s "$RUNNER_TEMP/mezura-badge.svg" ]; then
+          echo "::error::mezura wrote nothing to the output"
+          exit 1
+        fi
+
+    - name: Push the badge to the mezura-badge branch
+      shell: bash
+      env:
+        FILE: ${{ inputs.file }}
+        TOKEN: ${{ github.token }}
+      run: |
+        url="https://x-access-token:$TOKEN@github.com/$GITHUB_REPOSITORY.git"
+        branch="$RUNNER_TEMP/mezura-badge-branch"
+        rm -rf "$branch"
+        found=0
+        git ls-remote --exit-code "$url" refs/heads/mezura-badge > /dev/null || found=$?
+        case $found in
+          0) git clone -q --depth 1 --branch mezura-badge "$url" "$branch" ;;
+          2) git init -q "$branch" ;;
+          *) exit "$found" ;;
+        esac
+        mkdir -p "$(dirname "$branch/$FILE")"
+        cp "$RUNNER_TEMP/mezura-badge.svg" "$branch/$FILE"
+        cd "$branch"
+        if [ -z "$(git status --porcelain)" ]; then
+          echo "$FILE is unchanged"
+          exit 0
+        fi
+        git checkout -q --orphan fresh
+        git add -A
+        git -c user.name="github-actions[bot]" -c user.email="41898282+github-actions[bot]@users.noreply.github.com" commit -qm "mezura badge"
+        git push -qf "$url" fresh:mezura-badge
