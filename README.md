@@ -33,7 +33,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: subamanis/mezura-action@v3
+      - uses: subamanis/mezura-badge@v3
 ```
 
 And the image in the README, with your owner and repository in the URL:
@@ -56,10 +56,10 @@ And the image in the README, with your owner and repository in the URL:
 Each step writes its own file and keeps the files of the others.
 
 ```yaml
-      - uses: subamanis/mezura-action@v3
+      - uses: subamanis/mezura-badge@v3
         with:
           args: --badge code tests languages
-      - uses: subamanis/mezura-action@v3
+      - uses: subamanis/mezura-badge@v3
         with:
           args: --badge card --top 4
           file: card.svg
