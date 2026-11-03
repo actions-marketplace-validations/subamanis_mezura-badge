@@ -3,7 +3,7 @@
 A badge of your repository's line counts for its README, drawn by
 [mezura](https://github.com/subamanis/mezura) in a GitHub workflow.
 
-The SVG is pushed to a branch of its own, `mezura-badge`, which always holds a single commit.
+The SVG is pushed to a separate branch, `mezura-badge`, which always holds a single commit.
 Your own branches get no commits.
 
 ## Usage
