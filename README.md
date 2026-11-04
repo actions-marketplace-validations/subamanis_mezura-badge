@@ -8,15 +8,7 @@ Your own branches get no commits.
 
 ## Usage
 
-Once, at the terminal, save the project's settings and commit the `.mezura/` folder it writes:
-
-```bash
-mezura --tests @jest --save-local
-```
-
-The badge then counts the way a run at the terminal does. Any flag of mezura can be saved this way.
-
-Then a workflow:
+A workflow:
 
 ```yaml
 name: badge
@@ -50,6 +42,10 @@ And the image in the README, with your owner and repository in the URL:
 | `file` | `badge.svg` | the file name on the `mezura-badge` branch |
 
 `args` takes any flag of mezura. Quotes group words, as in a shell.
+
+## The project's settings
+
+If the repository has a `.mezura/config.txt`, the badge counts with its settings.
 
 ## Several badges
 
