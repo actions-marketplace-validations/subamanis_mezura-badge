@@ -65,6 +65,10 @@ Each step writes its own file and keeps the files of the others.
           file: card.svg
 ```
 
+[![mezura card](https://raw.githubusercontent.com/subamanis/mezura/mezura-badge/card.svg)](https://github.com/subamanis/mezura)
+
+mezura's own card, drawn by a step like the second one above.
+
 ## Versions
 
 Each release of the action runs the mezura release of the same number. `@v3` follows the latest 3.x.
